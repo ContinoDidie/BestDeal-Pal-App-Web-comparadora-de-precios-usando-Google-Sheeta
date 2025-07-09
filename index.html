@@ -2,111 +2,108 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>BestDeal Pal</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background-color: #f4f4f4;
-    }
-
-    header {
-      background-color: #ffffff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    }
-
-    header img {
-      max-width: 200px;
-      height: auto;
-    }
-
-    main {
-      padding: 20px;
-      text-align: center;
-    }
-
-    .producto {
-      background-color: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-      padding: 15px;
-      margin-bottom: 20px;
-      max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .producto img {
-      max-width: 100%;
-      height: auto;
-      border-radius: 8px;
-    }
-
-    .producto h3 {
-      margin: 10px 0 5px;
-      color: #333;
-    }
-
-    .producto p {
-      margin: 5px 0;
-    }
-
-    .producto a {
-      display: inline-block;
-      margin-top: 10px;
-      background-color: #4CAF50;
-      color: white;
-      padding: 8px 16px;
-      text-decoration: none;
-      border-radius: 8px;
-    }
-
-    .producto a:hover {
-      background-color: #45a049;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BestDeal PAL App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            background-color: #ffffff;
+            width: 100%;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        header img {
+            max-width: 150px;
+            display: block;
+            margin: 0 auto;
+        }
+        h1 {
+            margin: 10px 0 0 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .productos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .producto {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .producto img {
+            max-width: 100%;
+            height: 150px;
+            object-fit: contain;
+        }
+        .producto h2 {
+            font-size: 18px;
+            color: #444;
+        }
+        .producto p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        .producto a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <img src="logo_bestdeal.png" alt="BestDeal Pal Logo" />
-  </header>
+    <header>
+        <img src="logo_bestdeal.png" alt="Logo BestDeal" />
+        <h1>BestDeal PAL App</h1>
+    </header>
+    <main class="productos" id="productos-container">
+        <p>Cargando productos...</p>
+    </main>
 
-  <main>
-    <div id="productos">Cargando productos...</div>
-  </main>
-
-  <script>
-    fetch('https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec')
-      .then(response => response.json())
-      .then(data => {
-        const contenedor = document.getElementById("productos");
-        contenedor.innerHTML = "";
-
-        data.forEach(producto => {
-          const div = document.createElement("div");
-          div.className = "producto";
-          div.innerHTML = `
-            <img src="${producto.imagen}" alt="${producto.nombre}">
-            <h3>${producto.nombre}</h3>
-            <p><strong>Tienda:</strong> ${producto.tienda}</p>
-            <p><strong>Precio:</strong> ${producto.precio}</p>
-            <p><strong>Disponibilidad:</strong> ${producto.disponibilidad}</p>
-            <p><strong>Categoría:</strong> ${producto.categoría}</p>
-            <a href="${producto.enlace}" target="_blank">Ver producto</a>
-          `;
-          contenedor.appendChild(div);
-        });
-      })
-      .catch(error => {
-        document.getElementById("productos").innerText = "Error al cargar productos.";
-        console.error(error);
-      });
-  </script>
+    <script>
+        const url = "https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec";
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const contenedor = document.getElementById("productos-container");
+                contenedor.innerHTML = "";
+                data.forEach(producto => {
+                    const div = document.createElement("div");
+                    div.className = "producto";
+                    div.innerHTML = `
+                        <img src="${producto.imagen}" alt="${producto.nombre}" />
+                        <h2>${producto.nombre}</h2>
+                        <p><strong>Tienda:</strong> ${producto.tienda}</p>
+                        <p><strong>Precio:</strong> ${producto.precio}</p>
+                        <a href="${producto.enlace}" target="_blank">Ver producto</a>
+                    `;
+                    contenedor.appendChild(div);
+                });
+            })
+            .catch(err => {
+                document.getElementById("productos-container").innerHTML = "<p>Error al cargar productos.</p>";
+                console.error("Error:", err);
+            });
+    </script>
 </body>
 </html>
