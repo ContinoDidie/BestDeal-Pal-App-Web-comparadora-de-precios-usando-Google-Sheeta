@@ -1,19 +1,112 @@
 
-<!DOCTYPE html><html lang="es"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  <title>BestDeal Pal</title>  <style>    body {      font-family: 'Segoe UI', sans-serif;      background: #f5f7fa;      margin: 0;      padding: 0;      color: #333;    }
-    header {      text-align: center;      padding: 30px 10px 10px;      background: #ffffff;      box-shadow: 0 2px 4px rgba(0,0,0,0.1);    }
-    header img {      max-width: 150px;      height: auto;    }
-    h1 {      margin: 10px 0;      font-size: 2em;      color: #2c3e50;    }
-    .contenedor-productos {      display: grid;      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));      gap: 20px;      padding: 30px;    }
-    .producto {      background: #ffffff;      border-radius: 12px;      padding: 15px;      box-shadow: 0 4px 8px rgba(0,0,0,0.05);      transition: transform 0.2s ease;    }
-    .producto:hover {      transform: scale(1.02);    }
-    .producto img {      max-width: 100%;      height: auto;      border-radius: 8px;    }
-    .producto h2 {      font-size: 1.2em;      margin: 10px 0 5px;    }
-    .producto p {      margin: 5px 0;    }
-    .precio {      color: #e67e22;      font-weight: bold;      font-size: 1.1em;    }
-    .boton {      display: inline-block;      margin-top: 10px;      padding: 8px 15px;      background: #3498db;      color: #fff;      text-decoration: none;      border-radius: 6px;      transition: background 0.3s;    }
-    .boton:hover {      background: #2980b9;    }  </style></head><body>  <header>    <img src="logo_bestdeal.png" alt="Logo BestDeal Pal" />    <h1>BestDeal Pal V2</h1>  </header>
-  <main class="contenedor-productos" id="productos">    <p>Cargando productos...</p>  </main>
-  <script>    const URL_API = "https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec";
-    async function cargarProductos() {      try {        const res = await fetch(URL_API);        const productos = await res.json();        const contenedor = document.getElementById("productos");        contenedor.innerHTML = "";
-        productos.forEach(p => {          const productoHTML = `            <div class="producto">              <img src="${p.imagen}" alt="${p.nombre}" />              <h2>${p.nombre}</h2>              <p><strong>Tienda:</strong> ${p.tienda}</p>              <p class="precio">${p.precio}</p>              <a class="boton" href="${p.enlace}" target="_blank">Ver oferta</a>            </div>          `;          contenedor.innerHTML += productoHTML;        });      } catch (error) {        document.getElementById("productos").innerHTML = "<p>Error al cargar productos.</p>";      }    }
-    cargarProductos();  </script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BestDeal Pal</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+    }
+
+    header {
+      background-color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    header img {
+      max-width: 200px;
+      height: auto;
+    }
+
+    main {
+      padding: 20px;
+      text-align: center;
+    }
+
+    .producto {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      padding: 15px;
+      margin-bottom: 20px;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .producto img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+    }
+
+    .producto h3 {
+      margin: 10px 0 5px;
+      color: #333;
+    }
+
+    .producto p {
+      margin: 5px 0;
+    }
+
+    .producto a {
+      display: inline-block;
+      margin-top: 10px;
+      background-color: #4CAF50;
+      color: white;
+      padding: 8px 16px;
+      text-decoration: none;
+      border-radius: 8px;
+    }
+
+    .producto a:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo_bestdeal.png" alt="BestDeal Pal Logo" />
+  </header>
+
+  <main>
+    <div id="productos">Cargando productos...</div>
+  </main>
+
+  <script>
+    fetch('https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec')
+      .then(response => response.json())
+      .then(data => {
+        const contenedor = document.getElementById("productos");
+        contenedor.innerHTML = "";
+
+        data.forEach(producto => {
+          const div = document.createElement("div");
+          div.className = "producto";
+          div.innerHTML = `
+            <img src="${producto.imagen}" alt="${producto.nombre}">
+            <h3>${producto.nombre}</h3>
+            <p><strong>Tienda:</strong> ${producto.tienda}</p>
+            <p><strong>Precio:</strong> ${producto.precio}</p>
+            <p><strong>Disponibilidad:</strong> ${producto.disponibilidad}</p>
+            <p><strong>Categoría:</strong> ${producto.categoría}</p>
+            <a href="${producto.enlace}" target="_blank">Ver producto</a>
+          `;
+          contenedor.appendChild(div);
+        });
+      })
+      .catch(error => {
+        document.getElementById("productos").innerText = "Error al cargar productos.";
+        console.error(error);
+      });
+  </script>
+</body>
+</html>
