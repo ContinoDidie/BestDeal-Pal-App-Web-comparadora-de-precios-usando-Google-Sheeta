@@ -1,21 +1,157 @@
-<!DOCTYPE html><html lang="es"><head>  <meta charset="UTF-8" />  <title>BestDeal Pal</title>  <style>    body {      font-family: Arial, sans-serif;      background: #f3f3f3;      margin: 0;      padding: 20px;    }    #logo {      text-align: center;      margin-bottom: 20px;    }    #logo img {      max-width: 120px;      height: auto;      display: inline-block;    }    .filters {      margin-bottom: 20px;      display: flex;      justify-content: center;      gap: 20px;      flex-wrap: wrap;    }    select, input[type="number"] {      padding: 8px;      font-size: 1em;      border-radius: 4px;      border: 1px solid #ccc;    }    .product-grid {      display: grid;      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));      gap: 20px;    }    .product {      background: white;      border-radius: 8px;      box-shadow: 0 2px 8px rgba(0,0,0,0.1);      padding: 15px;      display: flex;      flex-direction: column;      justify-content: space-between;    }    .product img {      max-width: 100%;      height: 150px;      object-fit: contain;      margin-bottom: 10px;      border-radius: 4px;    }    .product h3 {      margin: 0 0 10px;      font-size: 1.1em;      color: #333;    }    .product p {      margin: 4px 0;      color: #555;      font-size: 0.95em;    }    .product a {      margin-top: 10px;      padding: 8px;      background: #00b894;      color: white;      text-align: center;      text-decoration: none;      border-radius: 4px;      font-weight: bold;      transition: background 0.3s ease;    }    .product a:hover {      background: #019875;    }    footer {      margin-top: 40px;      text-align: center;      color: #888;      font-size: 14px;    }  </style></head><body>
-  <div id="logo">    <img src="logo_bestdeal.png" alt="BestDeal Pal Logo" />  </div>
-  <div class="filters">    <select id="filterStore">      <option value="Todos">Todas las tiendas</option>    </select>
-    <label>      Precio mínimo:      <input type="number" id="minPrice" placeholder="0" min="0" />    </label>
-    <label>      Precio máximo:      <input type="number" id="maxPrice" placeholder="1000" min="0" />    </label>  </div>
-  <div class="product-grid" id="productList">    <p>Cargando productos...</p>  </div>
-  <footer>    &copy; 2025 BestDeal Pal. Todos los derechos reservados.  </footer>
-  <script>    const API_KEY = 'AIzaSyD7B6px2um5cWQ5BENtEDAzaFDo3lIrVxg';    const SHEET_ID = '1Q6I8AN7oSk_6pRPGUJAGlYuhEZTn4nvDi9tvjG3uDUQ';    const SHEET_NAME = 'Sheet1';  // <--- Aquí pon el nombre exacto de tu hoja
-    const url = `https://sheets.googleapis.com/v4/spreadsheets/${SHEET_ID}/values/${encodeURIComponent(SHEET_NAME)}?key=${API_KEY}`;
-    let products = [];
-    function formatPrice(price) {      if (!price) return '-';      let num = parseFloat(price.toString().replace(/[^0-9\.]/g, ''));      if (isNaN(num)) return price;      return '$' + num.toFixed(2);    }
-    function renderProducts(filterStore = 'Todos', minPrice = 0, maxPrice = Infinity) {      const container = document.getElementById('productList');      container.innerHTML = '';
-      let filtered = products.filter(p => {        const priceNum = parseFloat(p.precio.toString().replace(/[^0-9\.]/g, ''));        const storeMatch = filterStore === 'Todos' || p.tienda === filterStore;        const minMatch = priceNum >= minPrice;        const maxMatch = priceNum <= maxPrice;        return storeMatch && minMatch && maxMatch;      });
-      if (filtered.length === 0) {        container.innerHTML = '<p>No se encontraron productos con esos filtros.</p>';        return;      }
-      filtered.forEach(p => {        const productDiv = document.createElement('div');        productDiv.className = 'product';        productDiv.innerHTML = `          <img src="${p.imagen || 'https://via.placeholder.com/150?text=Sin+imagen'}" alt="${p.nombre}">          <h3>${p.nombre || 'Sin nombre'}</h3>          <p><strong>Precio:</strong> ${formatPrice(p.precio)}</p>          <p><strong>Tienda:</strong> ${p.tienda || 'Desconocida'}</p>          <p><strong>Disponibilidad:</strong> ${p.disponibilidad || 'No disponible'}</p>          <a href="${p.enlace || '#'}" target="_blank" rel="noopener noreferrer">Ver oferta</a>        `;        container.appendChild(productDiv);      });    }
-    function populateStores() {      const storeSet = new Set(products.map(p => p.tienda).filter(Boolean));      const select = document.getElementById('filterStore');
-      storeSet.forEach(store => {        const option = document.createElement('option');        option.value = store;        option.textContent = store;        select.appendChild(option);      });    }
-    function init() {      fetch(url)        .then(response => response.json())        .then(data => {          const values = data.values;          if (!values || values.length < 2) {            document.getElementById('productList').innerHTML = '<p>No hay productos disponibles.</p>';            return;          }          const headers = values[0].map(h => h.toLowerCase());          const rows = values.slice(1);          products = rows.map(row => {            const prod = {};            headers.forEach((h, i) => {              prod[h] = row[i] || '';            });            return prod;          });          populateStores();          renderProducts();
-          // Eventos de filtros          document.getElementById('filterStore').addEventListener('change', e => {            renderProducts(e.target.value, parseFloat(document.getElementById('minPrice').value) || 0, parseFloat(document.getElementById('maxPrice').value) || Infinity);          });          document.getElementById('minPrice').addEventListener('input', e => {            renderProducts(document.getElementById('filterStore').value, parseFloat(e.target.value) || 0, parseFloat(document.getElementById('maxPrice').value) || Infinity);          });          document.getElementById('maxPrice').addEventListener('input', e => {            renderProducts(document.getElementById('filterStore').value, parseFloat(document.getElementById('minPrice').value) || 0, parseFloat(e.target.value) || Infinity);          });        })        .catch(error => {          console.error('Error al cargar los productos:', error);          document.getElementById('productList').innerHTML = '<p>Error al cargar productos.</p>';        });    }
-    window.onload = init;  </script>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BestDeal Pal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 1rem;
+      background: #f9f9f9;
+      text-align: center;
+    }
+    header img {
+      width: 120px;
+      margin-top: 10px;
+    }
+    h1 {
+      margin-top: 0.5rem;
+    }
+    .filters {
+      margin: 1rem auto;
+    }
+    .filters input, .filters select {
+      padding: 0.5rem;
+      margin: 0.5rem;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1rem;
+      padding: 1rem 0;
+    }
+    .card {
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 1rem;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+    }
+    .card img {
+      max-width: 100%;
+      height: 150px;
+      object-fit: contain;
+    }
+    footer {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo_bestdeal.png" alt="Logo BestDeal Pal" />
+    <h1>BestDeal Pal</h1>
+  </header>
+
+  <div class="filters">
+    <label for="storeFilter">Filtrar por tienda:</label>
+    <select id="storeFilter" onchange="filterProducts()">
+      <option value="">Todas</option>
+    </select>
+
+    <label for="minPrice">Precio mínimo:</label>
+    <input type="number" id="minPrice" placeholder="0" oninput="filterProducts()"/>
+
+    <label for="maxPrice">Precio máximo:</label>
+    <input type="number" id="maxPrice" placeholder="9999" oninput="filterProducts()"/>
+  </div>
+
+  <div id="products" class="grid"></div>
+
+  <footer>
+    &copy; 2025 BestDeal Pal. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    const sheetId = "1Q6I8AN7oSk_6pRPGUJAGlYuhEZTn4nvDi9tvjG3uDUQ";
+    const apiKey = "AIzaSyD7B6px2um5cWQ5BENtEDAzaFDo3lIrVxg";
+    const sheetName = "Sheet1";
+
+    let allProducts = [];
+
+    async function fetchData() {
+      try {
+        const url = `https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/${sheetName}?key=${apiKey}`;
+        const response = await fetch(url);
+        const data = await response.json();
+
+        const headers = data.values[0];
+        allProducts = data.values.slice(1).map(row => {
+          let item = {};
+          headers.forEach((col, i) => item[col.trim().toLowerCase()] = row[i]);
+          return item;
+        });
+
+        populateFilters();
+        renderProducts(allProducts);
+      } catch (err) {
+        document.getElementById("products").innerHTML = "<p>Error al cargar productos.</p>";
+        console.error(err);
+      }
+    }
+
+    function populateFilters() {
+      const storeFilter = document.getElementById("storeFilter");
+      const stores = [...new Set(allProducts.map(p => p.tienda))];
+      stores.forEach(store => {
+        const option = document.createElement("option");
+        option.value = store;
+        option.textContent = store;
+        storeFilter.appendChild(option);
+      });
+    }
+
+    function filterProducts() {
+      const store = document.getElementById("storeFilter").value;
+      const min = parseFloat(document.getElementById("minPrice").value) || 0;
+      const max = parseFloat(document.getElementById("maxPrice").value) || Infinity;
+
+      const filtered = allProducts.filter(p => {
+        const price = parseFloat(p.precio) || 0;
+        return (!store || p.tienda === store) && price >= min && price <= max;
+      });
+
+      renderProducts(filtered);
+    }
+
+    function renderProducts(products) {
+      const container = document.getElementById("products");
+      container.innerHTML = "";
+
+      if (products.length === 0) {
+        container.innerHTML = "<p>No hay productos que coincidan.</p>";
+        return;
+      }
+
+      products.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = `
+          <img src="${p.imagen || 'https://via.placeholder.com/150'}" alt="${p.nombre}" />
+          <h3>${p.nombre}</h3>
+          <p><strong>Precio:</strong> $${p.precio}</p>
+          <p><strong>Tienda:</strong> ${p.tienda}</p>
+          <a href="${p.enlace}" target="_blank">Ver producto</a>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    fetchData();
+  </script>
 </body>
+</html>
