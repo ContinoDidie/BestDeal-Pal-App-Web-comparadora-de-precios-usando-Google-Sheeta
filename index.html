@@ -1,4 +1,226 @@
-<!DOCTYPE html><html lang="es"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  <title>BestDeal Pal</title>  <style>    body {      font-family: 'Segoe UI', sans-serif;      margin: 0;      padding: 0;      background: #f4f4f4;    }    header {      text-align: center;      padding: 1rem;      background-color: #ffffff;      box-shadow: 0 2px 5px rgba(0,0,0,0.1);    }    header img {      max-height: 80px;      display: block;      margin: 0 auto 0.5rem;    }    h1 {      margin: 0.5rem 0;    }    /* Contenedor general para centrar y limitar ancho */    .container {      max-width: 1200px;      margin: 0 auto; /* centra horizontalmente */      padding: 0 1rem;    }    .filters {      display: flex;      flex-wrap: wrap;      justify-content: center;      gap: 10px;      padding: 1rem 0;    }    .filters select,    .filters input[type="number"] {      padding: 0.5rem;      font-size: 1rem;    }    #productos {      display: grid;      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));      gap: 20px;      padding-bottom: 2rem;    }    .producto {      background-color: #fff;      border-radius: 12px;      box-shadow: 0 2px 8px rgba(0,0,0,0.1);      overflow: hidden;      display: flex;      flex-direction: column;      transition: transform 0.2s ease;    }    .producto:hover {      transform: scale(1.03);      box-shadow: 0 6px 12px rgba(0,0,0,0.15);    }    .producto img {      width: 100%;      height: 200px;      object-fit: contain;      background: #f9f9f9;    }    .producto-info {      padding: 1rem;      flex-grow: 1;    }    .producto h3 {      margin: 0 0 0.5rem 0;    }    .producto p {      margin: 0.3rem 0;      font-size: 0.9rem;      color: #333;    }    .botones {      margin-top: auto;      padding: 1rem;      display: flex;      justify-content: space-between;    }    .botones button {      padding: 0.5rem;      font-size: 0.85rem;      border: none;      border-radius: 6px;      cursor: pointer;      background-color: #007bff;      color: white;      transition: background-color 0.3s ease;    }    .botones button:hover {      background-color: #0056b3;    }    footer {      text-align: center;      font-size: 0.8rem;      padding: 1rem;      background: #f0f0f0;      margin-top: 2rem;    }  </style></head><body>  <header>    <img src="logo_bestdeal.png" alt="BestDeal Pal Logo" />    <h1>BestDeal Pal</h1>    <p>Compara precios entre múltiples tiendas y consigue la mejor oferta</p>  </header>    <!-- Contenedor general -->  <div class="container">    <div class="filters">      <select id="tiendaFiltro">        <option value="">Todas las tiendas</option>      </select>      <input type="number" id="precioMin" placeholder="Precio mínimo" />      <input type="number" id="precioMax" placeholder="Precio máximo" />      <button onclick="aplicarFiltros()">Filtrar</button>      <button onclick="vaciarCarrito()">Vaciar carrito </button>    </div>
-    <div id="productos">Cargando productos...</div>  </div>
-  <footer>    &copy; 2025 BestDeal Pal. Todos los derechos reservados.  </footer>
-  <script>    const API_URL = "https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec";    let todosLosProductos = [];    function cargarProductos() {      fetch(API_URL)        .then(res => res.json())        .then(data => {          todosLosProductos = data;          llenarFiltroTiendas(data);          mostrarProductos(data);        })        .catch(error => {          document.getElementById("productos").innerHTML = "Error al cargar productos.";          console.error(error);        });    }    function llenarFiltroTiendas(data) {      const tiendas = [...new Set(data.map(p => p.tienda))];      const select = document.getElementById("tiendaFiltro");      tiendas.forEach(t => {        const opt = document.createElement("option");        opt.value = t;        opt.textContent = t;        select.appendChild(opt);      });    }    function aplicarFiltros() {      const tienda = document.getElementById("tiendaFiltro").value;      const precioMin = parseFloat(document.getElementById("precioMin").value) || 0;      const precioMax = parseFloat(document.getElementById("precioMax").value) || Infinity;      const filtrados = todosLosProductos.filter(p => {        const precio = parseFloat(p.precio);        return (!tienda || p.tienda === tienda) && precio >= precioMin && precio <= precioMax;      });      mostrarProductos(filtrados);    }    function mostrarProductos(lista) {      const contenedor = document.getElementById("productos");      contenedor.innerHTML = "";      if (lista.length === 0) {        contenedor.innerHTML = "No se encontraron productos.";        return;      }      lista.forEach(p => {        const card = document.createElement("div");        card.className = "producto";        card.innerHTML = `          <img src="${p.imagen}" alt="${p.nombre}" />          <div class="producto-info">            <h3>${p.nombre}</h3>            <p><strong>Precio:</strong> $${p.precio}</p>            <p><strong>Tienda:</strong> ${p.tienda}</p>            <p><strong>Disponibilidad:</strong> ${p.disponibilidad || "N/A"}</p>          </div>          <div class="botones">            <button onclick="copiarEnlace('${p.enlace}')"> Copiar</button>            <button onclick="agregarAlCarrito('${p.nombre}')"> Añadir</button>          </div>        `;        contenedor.appendChild(card);      });    }    function copiarEnlace(url) {      navigator.clipboard.writeText(url).then(() => {        alert("¡Enlace copiado!");      });    }    function agregarAlCarrito(nombre) {      alert(`"${nombre}" añadido al carrito.`);    }    function vaciarCarrito() {      alert("Carrito vaciado.");    }    cargarProductos();  </script></body></html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BestDeal Pal</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+
+    header {
+      text-align: center;
+      padding: 1rem;
+      background-color: #ffffff;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    header img {
+      max-height: 80px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    h1 {
+      margin: 0.5rem 0;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      padding: 1rem;
+    }
+
+    .filters select,
+    .filters input[type="number"] {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+
+    #productos {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 1rem;
+    }
+
+    .producto {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .producto img {
+      width: 100%;
+      height: 200px;
+      object-fit: contain;
+      background: #f9f9f9;
+    }
+
+    .producto-info {
+      padding: 1rem;
+    }
+
+    .producto h3 {
+      margin: 0 0 0.5rem 0;
+    }
+
+    .producto p {
+      margin: 0.3rem 0;
+      font-size: 0.9rem;
+    }
+
+    .botones {
+      margin-top: auto;
+      padding: 1rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .botones button {
+      padding: 0.5rem;
+      font-size: 0.85rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background-color: #007bff;
+      color: white;
+    }
+
+    .botones button:hover {
+      background-color: #0056b3;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 0.8rem;
+      padding: 1rem;
+      background: #f0f0f0;
+      margin-top: 2rem;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="logo_bestdeal.png" alt="BestDeal Pal Logo" />
+  <h1>BestDeal Pal</h1>
+  <p>Compara precios entre múltiples tiendas y consigue la mejor oferta</p>
+</header>
+
+<div class="filters">
+  <select id="tiendaFiltro">
+    <option value="">Todas las tiendas</option>
+  </select>
+
+  <input type="number" id="precioMin" placeholder="Precio mínimo" />
+  <input type="number" id="precioMax" placeholder="Precio máximo" />
+  <button onclick="aplicarFiltros()">Filtrar</button>
+  <button onclick="vaciarCarrito()">Vaciar carrito 🛒</button>
+</div>
+
+<div id="productos">Cargando productos...</div>
+
+<footer>
+  &copy; 2025 BestDeal Pal. Todos los derechos reservados.
+</footer>
+
+<script>
+  const API_URL = "https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec";
+  let todosLosProductos = [];
+
+  function cargarProductos() {
+    fetch(API_URL)
+      .then(res => res.json())
+      .then(data => {
+        todosLosProductos = data;
+        llenarFiltroTiendas(data);
+        mostrarProductos(data);
+      })
+      .catch(error => {
+        document.getElementById("productos").innerHTML = "Error al cargar productos.";
+        console.error(error);
+      });
+  }
+
+  function llenarFiltroTiendas(data) {
+    const tiendas = [...new Set(data.map(p => p.tienda))];
+    const select = document.getElementById("tiendaFiltro");
+    tiendas.forEach(t => {
+      const opt = document.createElement("option");
+      opt.value = t;
+      opt.textContent = t;
+      select.appendChild(opt);
+    });
+  }
+
+  function aplicarFiltros() {
+    const tienda = document.getElementById("tiendaFiltro").value;
+    const precioMin = parseFloat(document.getElementById("precioMin").value) || 0;
+    const precioMax = parseFloat(document.getElementById("precioMax").value) || Infinity;
+
+    const filtrados = todosLosProductos.filter(p => {
+      const precio = parseFloat(p.precio);
+      return (!tienda || p.tienda === tienda) && precio >= precioMin && precio <= precioMax;
+    });
+
+    mostrarProductos(filtrados);
+  }
+
+  function mostrarProductos(lista) {
+    const contenedor = document.getElementById("productos");
+    contenedor.innerHTML = "";
+    if (lista.length === 0) {
+      contenedor.innerHTML = "No se encontraron productos.";
+      return;
+    }
+
+    lista.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "producto";
+
+      card.innerHTML = `
+        <img src="${p.imagen}" alt="${p.nombre}" />
+        <div class="producto-info">
+          <h3>${p.nombre}</h3>
+          <p><strong>Precio:</strong> $${p.precio}</p>
+          <p><strong>Tienda:</strong> ${p.tienda}</p>
+          <p><strong>Disponibilidad:</strong> ${p.disponibilidad || "N/A"}</p>
+        </div>
+        <div class="botones">
+          <button onclick="copiarEnlace('${p.enlace}')">📋 Copiar</button>
+          <button onclick="agregarAlCarrito('${p.nombre}')">🛒 Añadir</button>
+        </div>
+      `;
+      contenedor.appendChild(card);
+    });
+  }
+
+  function copiarEnlace(url) {
+    navigator.clipboard.writeText(url).then(() => {
+      alert("¡Enlace copiado!");
+    });
+  }
+
+  function agregarAlCarrito(nombre) {
+    alert(`"${nombre}" añadido al carrito.`);
+  }
+
+  function vaciarCarrito() {
+    alert("Carrito vaciado.");
+  }
+
+  cargarProductos();
+</script>
+
+</body>
+</html>
