@@ -1,32 +1,224 @@
-<!DOCTYPE html><html lang="es"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  <title>BestDeal Pal</title>  <style>    body {      font-family: Arial, sans-serif;      margin: 0;      padding: 0;      background-color: #f7f7f7;    }
-    header {      text-align: center;      padding: 20px;      background-color: #ffffff;      box-shadow: 0 2px 4px rgba(0,0,0,0.1);    }
-    header img {      width: 100px;      height: auto;    }
-    h1 {      margin: 10px 0 0;      font-size: 24px;      color: #333;    }
-    .filters {      display: flex;      flex-wrap: wrap;      justify-content: center;      gap: 10px;      margin: 20px;    }
-    .filters label,    .filters select,    .filters input {      font-size: 14px;      padding: 5px;    }
-    .product-grid {      display: grid;      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));      gap: 20px;      padding: 20px;    }
-    .product-card {      background: #fff;      border-radius: 8px;      box-shadow: 0 0 10px rgba(0,0,0,0.1);      padding: 15px;      display: flex;      flex-direction: column;      text-align: center;    }
-    .product-card img {      width: 100%;      max-height: 160px;      object-fit: contain;      margin-bottom: 10px;    }
-    .product-card h3 {      margin: 10px 0 5px;      font-size: 18px;      color: #222;    }
-    .product-card p {      margin: 5px 0;      font-size: 14px;      color: #555;    }
-    .product-card a {      margin-top: auto;      text-decoration: none;      background: #007BFF;      color: #fff;      padding: 8px 12px;      border-radius: 5px;      display: inline-block;    }
-    .error {      text-align: center;      color: red;      margin-top: 20px;    }
-    footer {      text-align: center;      font-size: 14px;      color: #666;      margin: 30px 0 10px;    }  </style></head><body>  <header>    <img src="logo_bestdeal.png" alt="Logo BestDeal Pal" />    <h1>BestDeal Pal</h1>  </header>
-  <section class="filters">    <label for="store-filter">Filtrar por tienda:</label>    <select id="store-filter">      <option value="todos">Todas</option>    </select>
-    <label for="min-price">Precio mínimo:</label>    <input type="number" id="min-price" placeholder="0">
-    <label for="max-price">Precio máximo:</label>    <input type="number" id="max-price" placeholder="1000">
-    <button onclick="aplicarFiltros()">Aplicar filtros</button>  </section>
-  <section id="product-container" class="product-grid"></section>
-  <div id="error-message" class="error"></div>
-  <footer>    © BestDeal Pal. Todos los derechos reservados.  </footer>
-  <script>    const apiURL = "https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec";    let productos = [];
-    async function cargarProductos() {      try {        const res = await fetch(apiURL);        const data = await res.json();        productos = data;        mostrarProductos(data);        llenarFiltroTiendas(data);      } catch (error) {        document.getElementById("error-message").textContent = "Error al cargar productos. Intenta más tarde.";      }    }
-    function mostrarProductos(lista) {      const contenedor = document.getElementById("product-container");      contenedor.innerHTML = "";
-      if (lista.length === 0) {        contenedor.innerHTML = "<p>No hay productos que coincidan con los filtros.</p>";        return;      }
-      lista.forEach(p => {        const card = document.createElement("div");        card.className = "product-card";        card.innerHTML = `          <img src="${p.imagen}" alt="${p.nombre}" />          <h3>${p.nombre}</h3>          <p><strong>${p.tienda}</strong></p>          <p><strong>${p.precio}</strong></p>          <p>${p.disponibilidad}</p>          <a href="${p.enlace}" target="_blank">Ver producto</a>        `;        contenedor.appendChild(card);      });    }
-    function llenarFiltroTiendas(lista) {      const tiendas = [...new Set(lista.map(p => p.tienda))];      const filtro = document.getElementById("store-filter");
-      tiendas.forEach(tienda => {        const opcion = document.createElement("option");        opcion.value = tienda;        opcion.textContent = tienda;        filtro.appendChild(opcion);      });    }
-    function aplicarFiltros() {      const tiendaSeleccionada = document.getElementById("store-filter").value;      const minPrecio = parseFloat(document.getElementById("min-price").value) || 0;      const maxPrecio = parseFloat(document.getElementById("max-price").value) || Infinity;
-      const filtrados = productos.filter(p => {        const precioNum = parseFloat(p.precio.toString().replace(/[^0-9.]/g, '')) || 0;        return (tiendaSeleccionada === "todos" || p.tienda === tiendaSeleccionada) &&               precioNum >= minPrecio &&               precioNum <= maxPrecio;      });
-      mostrarProductos(filtrados);    }
-    window.addEventListener("DOMContentLoaded", cargarProductos);  </script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BestDeal Pal</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0; padding: 0;
+      background-color: #f7f7f7;
+    }
+    header {
+      background: #fff;
+      text-align: center;
+      padding: 20px 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    header img {
+      width: 100px;
+      height: auto;
+      display: block;
+      margin: 0 auto;
+    }
+    header h1 {
+      margin: 10px 0 0;
+      font-size: 24px;
+      color: #333;
+    }
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    .filters label,
+    .filters select,
+    .filters input,
+    .filters button {
+      font-size: 14px;
+      padding: 6px 8px;
+    }
+    .filters button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .filters button:hover {
+      background-color: #0056b3;
+    }
+    #product-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .product-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .product-card img {
+      width: 100%;
+      max-height: 160px;
+      object-fit: contain;
+      margin-bottom: 10px;
+      border-radius: 4px;
+    }
+    .product-card h3 {
+      margin: 8px 0 5px;
+      font-size: 18px;
+      color: #222;
+    }
+    .product-card p {
+      margin: 4px 0;
+      font-size: 14px;
+      color: #555;
+    }
+    .product-card a {
+      margin-top: auto;
+      text-decoration: none;
+      background: #007BFF;
+      color: white;
+      padding: 8px 12px;
+      border-radius: 5px;
+      display: inline-block;
+      transition: background 0.3s;
+    }
+    .product-card a:hover {
+      background: #0056b3;
+    }
+    .error {
+      text-align: center;
+      color: red;
+      margin-top: 20px;
+    }
+    footer {
+      text-align: center;
+      font-size: 14px;
+      color: #666;
+      margin: 30px 0 10px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="logo_bestdeal.png" alt="Logo BestDeal Pal" />
+  <h1>BestDeal Pal</h1>
+</header>
+
+<section class="filters">
+  <label for="store-filter">Filtrar por tienda:</label>
+  <select id="store-filter">
+    <option value="todos">Todas</option>
+  </select>
+
+  <label for="min-price">Precio mínimo:</label>
+  <input type="number" id="min-price" placeholder="0" min="0" />
+
+  <label for="max-price">Precio máximo:</label>
+  <input type="number" id="max-price" placeholder="1000" min="0" />
+
+  <button onclick="aplicarFiltros()">Aplicar filtros</button>
+</section>
+
+<section id="product-container"></section>
+
+<div id="error-message" class="error"></div>
+
+<footer>
+  © BestDeal Pal. Todos los derechos reservados.
+</footer>
+
+<script>
+  const apiURL = "https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec";
+  let productos = [];
+
+  async function cargarProductos() {
+    try {
+      const res = await fetch(apiURL);
+      if (!res.ok) throw new Error("Respuesta no OK");
+      const data = await res.json();
+      productos = data;
+      llenarFiltroTiendas(data);
+      mostrarProductos(data);
+      document.getElementById("error-message").textContent = "";
+    } catch (error) {
+      document.getElementById("error-message").textContent = "Error al cargar productos. Intenta más tarde.";
+      console.error(error);
+    }
+  }
+
+  function llenarFiltroTiendas(lista) {
+    const tiendas = [...new Set(lista.map(p => p.tienda))];
+    const filtro = document.getElementById("store-filter");
+
+    // Limpia opciones excepto "todos"
+    filtro.querySelectorAll('option:not([value="todos"])').forEach(opt => opt.remove());
+
+    tiendas.forEach(tienda => {
+      const opcion = document.createElement("option");
+      opcion.value = tienda;
+      opcion.textContent = tienda;
+      filtro.appendChild(opcion);
+    });
+  }
+
+  function mostrarProductos(lista) {
+    const contenedor = document.getElementById("product-container");
+    contenedor.innerHTML = "";
+
+    if (lista.length === 0) {
+      contenedor.innerHTML = "<p>No hay productos que coincidan con los filtros.</p>";
+      return;
+    }
+
+    lista.forEach(p => {
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.innerHTML = `
+        <img src="${p.imagen}" alt="${p.nombre}" />
+        <h3>${p.nombre}</h3>
+        <p><strong>${p.tienda}</strong></p>
+        <p><strong>${p.precio}</strong></p>
+        <p>${p.disponibilidad}</p>
+        <a href="${p.enlace}" target="_blank" rel="noopener noreferrer">Ver producto</a>
+      `;
+      contenedor.appendChild(card);
+    });
+  }
+
+  function aplicarFiltros() {
+    const tiendaSeleccionada = document.getElementById("store-filter").value;
+    const minPrecio = parseFloat(document.getElementById("min-price").value) || 0;
+    const maxPrecio = parseFloat(document.getElementById("max-price").value) || Infinity;
+
+    const filtrados = productos.filter(p => {
+      // Extraer números del precio para comparar
+      const precioNum = parseFloat(p.precio.toString().replace(/[^0-9.,]/g, '').replace(',', '.')) || 0;
+
+      return (tiendaSeleccionada === "todos" || p.tienda === tiendaSeleccionada) &&
+             precioNum >= minPrecio &&
+             precioNum <= maxPrecio;
+    });
+
+    mostrarProductos(filtrados);
+  }
+
+  window.addEventListener("DOMContentLoaded", cargarProductos);
+</script>
+
+</body>
+</ht
