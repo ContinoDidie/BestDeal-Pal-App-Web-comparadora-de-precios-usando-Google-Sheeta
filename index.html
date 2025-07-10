@@ -1,24 +1,197 @@
-<!DOCTYPE html><html lang="es"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>  <title>BestDeal Pal</title>  <style>    body {      font-family: 'Segoe UI', sans-serif;      background-color: #f4f4f4;      margin: 0;      padding: 0;    }
-    header {      background-color: #222;      color: white;      text-align: center;      padding: 1em;    }
-    header img {      max-width: 150px;      display: block;      margin: 0 auto 10px;    }
-    h1 {      margin: 0;      font-size: 1.8em;    }
-    .filters {      display: flex;      flex-wrap: wrap;      justify-content: center;      gap: 10px;      padding: 15px;      background-color: #fff;    }
-    .filters input, .filters select {      padding: 8px;      border-radius: 5px;      border: 1px solid #ccc;      font-size: 1em;    }
-    .products {      display: grid;      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));      gap: 20px;      padding: 20px;    }
-    .card {      background-color: white;      border-radius: 10px;      box-shadow: 0 2px 8px rgba(0,0,0,0.1);      padding: 15px;      display: flex;      flex-direction: column;      align-items: center;      text-align: center;      transition: transform 0.2s;    }
-    .card:hover {      transform: scale(1.02);    }
-    .card img {      max-width: 100px;      margin-bottom: 10px;    }
-    .card a {      color: #007bff;      text-decoration: none;      margin-top: 5px;    }
-    .footer {      background-color: #222;      color: #ccc;      text-align: center;      padding: 10px;      font-size: 0.9em;      margin-top: 20px;    }  </style></head><body>  <header>    <img src="logo_bestdeal.png" alt="Logo BestDeal PAL">    <h1>BestDeal PAL</h1>  </header>
-  <div class="filters">    <input type="text" id="busqueda" placeholder="Buscar producto..." oninput="mostrarProductos()">    <select id="filtroTienda" onchange="mostrarProductos()">      <option value="">Todas las tiendas</option>    </select>    <input type="number" id="precioMin" placeholder="Precio mínimo" oninput="mostrarProductos()">    <input type="number" id="precioMax" placeholder="Precio máximo" oninput="mostrarProductos()">  </div>
-  <div class="products" id="contenedor"></div>
-  <div class="footer">    © 2025 BestDeal Pal. Todos los derechos reservados.  </div>
-  <script>    let productos = [];
-    async function obtenerProductos() {      try {        const respuesta = await fetch("https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec");        productos = await respuesta.json();        cargarTiendas();        mostrarProductos();      } catch (error) {        document.getElementById("contenedor").innerHTML = "<p>Error al cargar productos.</p>";      }    }
-    function cargarTiendas() {      const tiendas = [...new Set(productos.map(p => p.tienda))].sort();      const select = document.getElementById("filtroTienda");      tiendas.forEach(t => {        const option = document.createElement("option");        option.value = t;        option.textContent = t;        select.appendChild(option);      });    }
-    function mostrarProductos() {      const contenedor = document.getElementById("contenedor");      const textoBusqueda = document.getElementById("busqueda").value.toLowerCase();      const tiendaSeleccionada = document.getElementById("filtroTienda").value;      const precioMin = parseFloat(document.getElementById("precioMin").value) || 0;      const precioMax = parseFloat(document.getElementById("precioMax").value) || Infinity;
-      const filtrados = productos.filter(p => {        const nombreMatch = p.nombre.toLowerCase().includes(textoBusqueda);        const tiendaMatch = tiendaSeleccionada ? p.tienda === tiendaSeleccionada : true;        const precio = parseFloat(p.precio) || 0;        const precioMatch = precio >= precioMin && precio <= precioMax;        return nombreMatch && tiendaMatch && precioMatch;      });
-      contenedor.innerHTML = "";
-      if (filtrados.length === 0) {        contenedor.innerHTML = "<p>No se encontraron productos.</p>";        return;      }
-      filtrados.forEach(p => {        const card = document.createElement("div");        card.className = "card";        card.innerHTML = `          <img src="${p.imagen}" alt="${p.nombre}">          <h3>${p.nombre}</h3>          <p><strong>Precio:</strong> $${p.precio}</p>          <p><strong>Tienda:</strong> ${p.tienda}</p>          <a href="${p.enlace}" target="_blank">Ver producto</a>        `;        contenedor.appendChild(card);      });    }
-    window.onload = obtenerProductos;  </script></body></html>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>BestDeal Pal</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #1a1a1a;
+      color: white;
+      text-align: center;
+      padding: 30px 20px;
+    }
+
+    header img {
+      width: 120px;
+      margin-bottom: 10px;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 2rem;
+    }
+
+    .filters {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      padding: 20px;
+      background-color: #fff;
+    }
+
+    .filters input,
+    .filters select {
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 1em;
+      width: 180px;
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .card {
+      background-color: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+      padding: 15px;
+      text-align: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .card:hover {
+      transform: scale(1.03);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    }
+
+    .card img {
+      max-width: 100px;
+      height: auto;
+      margin-bottom: 10px;
+    }
+
+    .card h3 {
+      font-size: 1.1rem;
+      margin: 10px 0 5px;
+    }
+
+    .card a {
+      color: #007bff;
+      text-decoration: none;
+      font-weight: bold;
+      display: inline-block;
+      margin-top: 10px;
+    }
+
+    .footer {
+      background-color: #1a1a1a;
+      color: #bbb;
+      text-align: center;
+      padding: 15px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <img src="logo_bestdeal.png" alt="BestDeal Logo">
+    <h1>BestDeal Pal</h1>
+  </header>
+
+  <div class="filters">
+    <input type="text" id="busqueda" placeholder="Buscar producto..." oninput="mostrarProductos()">
+    <select id="filtroTienda" onchange="mostrarProductos()">
+      <option value="">Todas las tiendas</option>
+    </select>
+    <input type="number" id="precioMin" placeholder="Precio mínimo" oninput="mostrarProductos()">
+    <input type="number" id="precioMax" placeholder="Precio máximo" oninput="mostrarProductos()">
+  </div>
+
+  <div class="products" id="contenedor"></div>
+
+  <div class="footer">
+    © 2025 BestDeal Pal. Todos los derechos reservados.
+  </div>
+
+  <script>
+    let productos = [];
+
+    async function obtenerProductos() {
+      try {
+        const respuesta = await fetch("https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec");
+        productos = await respuesta.json();
+        cargarTiendas();
+        mostrarProductos();
+      } catch (error) {
+        document.getElementById("contenedor").innerHTML = "<p>Error al cargar productos.</p>";
+      }
+    }
+
+    function cargarTiendas() {
+      const select = document.getElementById("filtroTienda");
+      const tiendasUnicas = [...new Set(productos.map(p => p.tienda).filter(Boolean))];
+
+      tiendasUnicas.forEach(tienda => {
+        const option = document.createElement("option");
+        option.value = tienda;
+        option.textContent = tienda;
+        select.appendChild(option);
+      });
+    }
+
+    function mostrarProductos() {
+      const contenedor = document.getElementById("contenedor");
+      const busqueda = document.getElementById("busqueda").value.toLowerCase();
+      const filtroTienda = document.getElementById("filtroTienda").value;
+      const precioMin = parseFloat(document.getElementById("precioMin").value) || 0;
+      const precioMax = parseFloat(document.getElementById("precioMax").value) || Infinity;
+
+      const filtrados = productos.filter(p => {
+        const nombre = p.nombre.toLowerCase();
+        const tienda = p.tienda;
+        const precio = parseFloat(p.precio) || 0;
+
+        return (
+          nombre.includes(busqueda) &&
+          (filtroTienda === "" || tienda === filtroTienda) &&
+          precio >= precioMin &&
+          precio <= precioMax
+        );
+      });
+
+      contenedor.innerHTML = "";
+
+      if (filtrados.length === 0) {
+        contenedor.innerHTML = "<p>No se encontraron productos.</p>";
+        return;
+      }
+
+      filtrados.forEach(p => {
+        const tarjeta = document.createElement("div");
+        tarjeta.className = "card";
+        tarjeta.innerHTML = `
+          <img src="${p.imagen}" alt="${p.nombre}">
+          <h3>${p.nombre}</h3>
+          <p><strong>Precio:</strong> $${p.precio}</p>
+          <p><strong>Tienda:</strong> ${p.tienda}</p>
+          <a href="${p.enlace}" target="_blank">Ver producto</a>
+        `;
+        contenedor.appendChild(tarjeta);
+      });
+    }
+
+    window.onload = obtenerProductos;
+  </script>
+</body>
+</
