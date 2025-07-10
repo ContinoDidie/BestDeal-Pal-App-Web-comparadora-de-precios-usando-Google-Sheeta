@@ -1,131 +1,23 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BestDeal PAL App</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', sans-serif;
-      margin: 0;
-      padding: 0;
-      background-color: #f0f4f8;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    header {
-      background-color: #ffffff;
-      width: 100%;
-      padding: 20px 0;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      text-align: center;
-    }
-    header img {
-      max-width: 150px;
-      display: block;
-      margin: 0 auto;
-    }
-    h1 {
-      margin: 10px 0 0 0;
-      font-size: 24px;
-      color: #333;
-    }
-    main.productos {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 20px;
-      padding: 30px;
-      width: 100%;
-      max-width: 1200px;
-      box-sizing: border-box;
-    }
-    .producto {
-      background-color: #fff;
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      text-align: center;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .producto img {
-      max-width: 100%;
-      height: 150px;
-      object-fit: contain;
-      margin-bottom: 10px;
-      border-radius: 8px;
-    }
-    .producto h2 {
-      font-size: 18px;
-      color: #444;
-      margin: 0 0 10px;
-    }
-    .producto p {
-      font-size: 16px;
-      margin: 5px 0;
-      color: #555;
-    }
-    .producto a {
-      display: inline-block;
-      margin-top: auto;
-      padding: 10px 15px;
-      background-color: #007bff;
-      color: white;
-      text-decoration: none;
-      border-radius: 6px;
-      font-weight: 600;
-      transition: background-color 0.3s ease;
-    }
-    .producto a:hover {
-      background-color: #0056b3;
-    }
-    @media (max-width: 480px) {
-      main.productos {
-        grid-template-columns: 1fr;
-        padding: 15px;
-      }
-      header img {
-        max-width: 120px;
-      }
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <img src="logo_bestdeal.png" alt="Logo BestDeal" />
-    <h1>BestDeal PAL App</h1>
-  </header>
-  <main class="productos" id="productos-container">
-    <p>Cargando productos...</p>
-  </main>
-
-  <script>
-    const url = "https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec";
-
-    fetch(url)
-      .then(res => res.json())
-      .then(data => {
-        const contenedor = document.getElementById("productos-container");
-        contenedor.innerHTML = "";
-        data.forEach(producto => {
-          const div = document.createElement("div");
-          div.className = "producto";
-          div.innerHTML = `
-            <img src="${producto.imagen}" alt="${producto.nombre}" />
-            <h2>${producto.nombre}</h2>
-            <p><strong>Tienda:</strong> ${producto.tienda}</p>
-            <p><strong>Precio:</strong> ${producto.precio}</p>
-            <a href="${producto.enlace}" target="_blank" rel="noopener noreferrer">Ver producto</a>
-          `;
-          contenedor.appendChild(div);
-        });
-      })
-      .catch(err => {
-        document.getElementById("productos-container").innerText = "Error al cargar productos.";
-        console.error(err);
-      });
-  </script>
-</body>
-</html>
+<!DOCTYPE html><html lang="es"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <title>BestDeal PAL</title>  <style>    body {      font-family: Arial, sans-serif;      background-color: #f4f4f4;      margin: 0;      padding: 0;      text-align: center;    }
+    header {      background-color: #fff;      padding: 20px 10px;      border-bottom: 1px solid #ccc;    }
+    header img {      max-width: 180px;      height: auto;      display: block;      margin: 0 auto 10px;    }
+    h1 {      color: #333;      margin: 10px 0 0;    }
+    .product-container {      display: flex;      flex-wrap: wrap;      justify-content: center;      gap: 20px;      padding: 30px 20px;    }
+    .product-card {      background-color: #fff;      border-radius: 12px;      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);      width: 280px;      padding: 16px;      text-align: left;    }
+    .product-card img {      width: 100%;      height: 180px;      object-fit: contain;      border-radius: 8px;    }
+    .product-title {      font-weight: bold;      margin: 10px 0 5px;    }
+    .product-price {      color: green;      font-size: 1.2em;    }
+    .product-link a {      text-decoration: none;      color: #007bff;    }
+    footer {      background-color: #f4f4f4;      color: #777;      padding: 15px;      font-size: 0.9em;      border-top: 1px solid #ccc;      margin-top: 30px;    }  </style></head><body>
+  <header>    <img src="logo_bestdeal.png" alt="Logo BestDeal PAL" onerror="this.style.display='none'"/>    <h1>BestDeal PAL - Comparador</h1>  </header>
+  <div class="product-container" id="product-list">    <p>Cargando productos...</p>  </div>
+  <footer>    © 2025 BestDeal PAL. Todos los derechos reservados.  </footer>
+  <script>    const apiURL = "https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec";
+    async function cargarProductos() {      const container = document.getElementById("product-list");      container.innerHTML = "";
+      try {        const res = await fetch(apiURL);        const productos = await res.json();
+        if (!Array.isArray(productos)) {          container.innerHTML = "<p>Error al cargar productos.</p>";          return;        }
+        productos.forEach(prod => {          const card = document.createElement("div");          card.className = "product-card";          card.innerHTML = `            <img src="${prod.imagen || 'https://via.placeholder.com/280x180?text=Sin+imagen'}" alt="${prod.nombre}"               onerror="this.src='https://via.placeholder.com/280x180?text=Imagen+no+disponible'"/>            <div class="product-title">${prod.nombre}</div>            <div class="product-price">${prod.precio || ''}</div>            <div class="product-link"><a href="${prod.enlace}" target="_blank">Ver en ${prod.tienda || 'tienda'}</a></div>          `;          container.appendChild(card);        });
+        if (productos.length === 0) {          container.innerHTML = "<p>No hay productos disponibles.</p>";        }
+      } catch (error) {        container.innerHTML = `<p>Error al cargar productos: ${error.message}</p>`;      }    }
+    cargarProductos();  </script>
+</body></html
