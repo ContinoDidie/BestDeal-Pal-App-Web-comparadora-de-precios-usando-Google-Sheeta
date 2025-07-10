@@ -1,14 +1,33 @@
-# BestDeal Pal – Tu Asistente Inteligente de Compras
-**BestDeal Pal** es una app web creada para ayudarte a encontrar **los mejores precios** de tus productos favoritos, comparando múltiples tiendas de forma rápida, sencilla y visual.
-Con esta segunda versión, traemos un diseño mejorado, mayor velocidad de carga y nuevas funciones que hacen que comprar de forma inteligente sea más fácil que nunca.
----
-## Características principales
-- Comparación en tiempo real entre tiendas- Encuentra el precio más bajo disponible- Filtros avanzados por categoría, marca o tienda- Compatible con enlaces de afiliados- Optimizado para móviles y tablets- Próximamente: alertas de bajadas de precio
----
-## Desarrollado por
-**Didie Contino** – Emprendedor digital y creador de herramientas web útiles y accesibles para todos.
----
-## Sitio en vivo
-[ Visítalo aquí](https://continodidie.github.io/bestdealpal/)
----
-> BestDeal Pal es tu mejor amigo para ahorrar. ¡Compara antes de comprar!
+
+# BestDeal-Pal-App (Comparador y Alertas de Precios)
+
+Aplicación web y script en Google Apps Script para comparar precios y recibir alertas automáticas cuando el precio baja.
+
+## 🚀 Funcionalidades:
+- Comparación de precios en múltiples tiendas.
+- Web App que muestra los datos en JSON.
+- Envío automático de emails cuando un producto alcanza el precio objetivo.
+- Activadores automáticos para revisiones periódicas.
+
+## 📋 Requisitos:
+- Cuenta Google con acceso a Google Sheets y Google Apps Script.
+- Hoja de cálculo con las siguientes columnas:
+
+| producto | tienda | precio actual | precio objetivo | correo |
+
+## 📄 Archivos:
+- `Code.gs`: Código completo de Google Apps Script.
+- `hoja_ejemplo.csv`: Ejemplo de la hoja de cálculo.
+  
+## ⚙️ Instalación:
+1. Crea un proyecto en [Google Apps Script](https://script.google.com).
+2. Copia el contenido de `Code.gs` en tu proyecto.
+3. Configura tu hoja de cálculo según el ejemplo.
+4. Ejecuta la función `forzarPermisos` para otorgar permisos.
+5. Crea un activador (trigger) para la función `verificarPrecios` (cada hora o según tu preferencia).
+
+## ✅ Activadores recomendados:
+- Basado en tiempo: cada hora o una vez al día.
+
+## 💡 Créditos:
+Proyecto de automatización para comparación y alerta de precios, creado con Google Apps Script.
