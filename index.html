@@ -1,25 +1,30 @@
-<!DOCTYPE html><html lang="es"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <title>BestDeal Pal</title>  <style>    body {      font-family: Arial, sans-serif;      margin: 0;      background: #f5f5f5;    }
-    header {      text-align: center;      padding: 1rem;      background: #fff;      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);    }
-    header img {      height: 60px;    }
-    .filtros {      padding: 1rem;      background: #fff;      display: flex;      flex-wrap: wrap;      gap: 10px;      justify-content: center;    }
-    .filtros input,    .filtros select {      padding: 0.5rem;      font-size: 1rem;    }
-    .productos {      display: grid;      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));      gap: 1rem;      padding: 1rem;    }
-    .producto {      background: #fff;      padding: 1rem;      border-radius: 8px;      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);      display: flex;      flex-direction: column;      justify-content: space-between;      transition: transform 0.3s;    }
-    .producto:hover {      transform: scale(1.02);    }
-    .producto img {      width: 100%;      height: 150px;      object-fit: contain;      margin-bottom: 10px;    }
-    footer {      text-align: center;      padding: 1rem;      background: #222;      color: #fff;      margin-top: 2rem;    }  </style></head><body>  <header>    <img src="logo_bestdeal.png" alt="BestDeal Pal Logo">  </header>
-  <div class="filtros">    <input type="text" id="busqueda" placeholder="Buscar producto...">    <select id="filtroTienda">      <option value="">Todas las tiendas</option>    </select>    <input type="number" id="precioMin" placeholder="Precio mínimo">    <input type="number" id="precioMax" placeholder="Precio máximo">  </div>
-  <div class="productos" id="contenedorProductos">Cargando productos...</div>
+<!DOCTYPE html><html lang="es"><head>  <meta charset="UTF-8" />  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  <title>BestDeal Pal</title>  <style>    body {      margin: 0;      font-family: 'Segoe UI', sans-serif;      background-color: #f2f2f2;    }
+    header {      text-align: center;      background: #ffffff;      padding: 1rem;      box-shadow: 0 2px 4px rgba(0,0,0,0.1);    }
+    header img {      max-height: 60px;    }
+    .filtros {      display: flex;      flex-wrap: wrap;      justify-content: center;      gap: 1rem;      padding: 1rem;      background-color: #ffffff;    }
+    .filtros input, .filtros select {      padding: 0.5rem;      font-size: 1rem;      border: 1px solid #ccc;      border-radius: 4px;    }
+    .productos {      display: grid;      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));      gap: 1rem;      padding: 1rem;    }
+    .producto {      background: #ffffff;      border-radius: 8px;      box-shadow: 0 2px 6px rgba(0,0,0,0.1);      padding: 1rem;      display: flex;      flex-direction: column;      align-items: center;      transition: transform 0.2s;    }
+    .producto:hover {      transform: scale(1.03);    }
+    .producto img {      max-width: 100%;      max-height: 150px;      object-fit: contain;      margin-bottom: 0.5rem;    }
+    .producto h3 {      font-size: 1.1rem;      margin: 0.5rem 0;    }
+    .producto p {      margin: 0.3rem 0;      font-size: 0.95rem;      text-align: center;    }
+    .producto a {      margin-top: auto;      padding: 0.4rem 0.8rem;      background: #007BFF;      color: white;      text-decoration: none;      border-radius: 4px;    }
+    .producto a:hover {      background: #0056b3;    }
+    footer {      text-align: center;      padding: 1rem;      background-color: #222;      color: white;      font-size: 0.9rem;    }  </style></head><body>
+  <header>    <img src="logo_bestdeal.png" alt="Logo de BestDeal Pal">  </header>
+  <div class="filtros">    <input type="text" id="busqueda" placeholder="Buscar producto..." />    <select id="filtroTienda">      <option value="">Todas las tiendas</option>    </select>    <input type="number" id="precioMin" placeholder="Precio mínimo" />    <input type="number" id="precioMax" placeholder="Precio máximo" />  </div>
+  <div class="productos" id="contenedorProductos">    Cargando productos...  </div>
   <footer>    &copy; 2025 BestDeal Pal. Todos los derechos reservados.  </footer>
   <script>    const API_URL = "https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec";    let productos = [];
-    async function cargarProductos() {      try {        const res = await fetch(API_URL);        productos = await res.json();        poblarFiltroTiendas();        mostrarProductos(productos);      } catch (error) {        document.getElementById('contenedorProductos').innerText = "Error al cargar productos.";        console.error(error);      }    }
+    async function cargarProductos() {      try {        const res = await fetch(API_URL);        productos = await res.json();        poblarFiltroTiendas();        mostrarProductos(productos);      } catch (err) {        document.getElementById("contenedorProductos").innerText = "Error al cargar productos.";        console.error(err);      }    }
     function poblarFiltroTiendas() {      const tiendas = [...new Set(productos.map(p => p.tienda).filter(Boolean))];      const select = document.getElementById("filtroTienda");      tiendas.forEach(tienda => {        const option = document.createElement("option");        option.value = tienda;        option.textContent = tienda;        select.appendChild(option);      });    }
-    function mostrarProductos(lista) {      const contenedor = document.getElementById("contenedorProductos");      contenedor.innerHTML = "";
-      if (lista.length === 0) {        contenedor.innerHTML = "<p>No se encontraron productos.</p>";        return;      }
-      lista.forEach(producto => {        const card = document.createElement("div");        card.className = "producto";        card.innerHTML = `          <img src="${producto.imagen}" alt="${producto.nombre}" />          <h3>${producto.nombre}</h3>          <p><strong>Precio:</strong> $${producto.precio}</p>          <p><strong>Tienda:</strong> ${producto.tienda}</p>          <p><strong>Disponibilidad:</strong> ${producto.disponibilidad}</p>          <a href="${producto.enlace}" target="_blank">Ver producto</a>        `;        contenedor.appendChild(card);      });    }
+    function mostrarProductos(lista) {      const contenedor = document.getElementById("contenedorProductos");      contenedor.innerHTML = "";      if (lista.length === 0) {        contenedor.innerHTML = "<p>No se encontraron productos.</p>";        return;      }
+      lista.forEach(p => {        const div = document.createElement("div");        div.className = "producto";        div.innerHTML = `          <img src="${p.imagen}" alt="${p.nombre}" />          <h3>${p.nombre}</h3>          <p><strong>Precio:</strong> $${p.precio}</p>          <p><strong>Tienda:</strong> ${p.tienda}</p>          <p><strong>Disponibilidad:</strong> ${p.disponibilidad}</p>          <a href="${p.enlace}" target="_blank">Ver producto</a>        `;        contenedor.appendChild(div);      });    }
     function aplicarFiltros() {      const texto = document.getElementById("busqueda").value.toLowerCase();      const tienda = document.getElementById("filtroTienda").value;      const precioMin = parseFloat(document.getElementById("precioMin").value);      const precioMax = parseFloat(document.getElementById("precioMax").value);
-      const filtrados = productos.filter(p => {        const coincideNombre = p.nombre.toLowerCase().includes(texto);        const coincideTienda = !tienda || p.tienda === tienda;        const precio = parseFloat(p.precio);        const coincidePrecioMin = isNaN(precioMin) || precio >= precioMin;        const coincidePrecioMax = isNaN(precioMax) || precio <= precioMax;
-        return coincideNombre && coincideTienda && coincidePrecioMin && coincidePrecioMax;      });
+      const filtrados = productos.filter(p => {        const coincideTexto = p.nombre.toLowerCase().includes(texto);        const coincideTienda = !tienda || p.tienda === tienda;        const precio = parseFloat(p.precio);        const coincidePrecioMin = isNaN(precioMin) || precio >= precioMin;        const coincidePrecioMax = isNaN(precioMax) || precio <= precioMax;
+        return coincideTexto && coincideTienda && coincidePrecioMin && coincidePrecioMax;      });
       mostrarProductos(filtrados);    }
     document.getElementById("busqueda").addEventListener("input", aplicarFiltros);    document.getElementById("filtroTienda").addEventListener("change", aplicarFiltros);    document.getElementById("precioMin").addEventListener("input", aplicarFiltros);    document.getElementById("precioMax").addEventListener("input", aplicarFiltros);
-    cargarProductos();  </script></body></html>
+    cargarProductos();  </script>
+</body></html>
