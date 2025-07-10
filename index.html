@@ -1,99 +1,109 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <title>BestDeal-Pal App - Comparador de Precios</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f8f9fa;
-      margin: 0;
-      padding: 20px;
-    }
-    h1 {
-      color: #333;
-      text-align: center;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      padding: 12px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
-    th {
-      background-color: #007bff;
-      color: white;
-    }
-    button {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 20px;
-    }
-    button:hover {
-      background-color: #218838;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BestDeal PAL App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        header {
+            background-color: #ffffff;
+            width: 100%;
+            padding: 20px 0;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        header img {
+            max-width: 150px;
+            display: block;
+            margin: 0 auto;
+        }
+        h1 {
+            margin: 10px 0 0 0;
+            font-size: 24px;
+            color: #333;
+        }
+        .productos {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 30px;
+            width: 100%;
+            max-width: 1200px;
+        }
+        .producto {
+            background-color: #fff;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        .producto img {
+            max-width: 100%;
+            height: 150px;
+            object-fit: contain;
+        }
+        .producto h2 {
+            font-size: 18px;
+            color: #444;
+        }
+        .producto p {
+            font-size: 16px;
+            margin: 5px 0;
+        }
+        .producto a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+    </style>
 </head>
 <body>
-  <h1>BestDeal-Pal App</h1>
-  <button onclick="cargarDatos()">Actualizar Datos</button>
-  <table id="tablaProductos">
-    <thead>
-      <tr>
-        <th>Producto</th>
-        <th>Tienda</th>
-        <th>Precio Actual</th>
-        <th>Precio Objetivo</th>
-        <th>Correo</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td colspan="5">Cargando datos...</td></tr>
-    </tbody>
-  </table>
+    <header>
+        <img src="logo_bestdeal.png" alt="Logo BestDeal" />
+        <h1>BestDeal PAL App</h1>
+    </header>
+    <main class="productos" id="productos-container">
+        <p>Cargando productos...</p>
+    </main>
 
-  <script>
-    const apiUrl = "https://script.google.com/macros/s/AKfycbzVYfzTAq07LXGd_alkq6m7MFiWVPVq5wZEKlL-prrEztjrmGgYrxDGGnWlY-KohmaTUQ/exec"; // Cambia por tu URL si cambia
-
-    async function cargarDatos() {
-      const tabla = document.querySelector("#tablaProductos tbody");
-      tabla.innerHTML = "<tr><td colspan='5'>Cargando datos...</td></tr>";
-
-      try {
-        const respuesta = await fetch(apiUrl);
-        const productos = await respuesta.json();
-
-        if (productos.length === 0) {
-          tabla.innerHTML = "<tr><td colspan='5'>No hay productos en la lista.</td></tr>";
-          return;
-        }
-
-        tabla.innerHTML = "";
-        productos.forEach(producto => {
-          const fila = document.createElement("tr");
-          fila.innerHTML = `
-            <td>${producto["producto"] || "-"}</td>
-            <td>${producto["tienda"] || "-"}</td>
-            <td>${producto["precio actual"]}</td>
-            <td>${producto["precio objetivo"]}</td>
-            <td>${producto["correo"]}</td>
-          `;
-          tabla.appendChild(fila);
-        });
-      } catch (error) {
-        tabla.innerHTML = "<tr><td colspan='5'>Error al cargar los datos.</td></tr>";
-      }
-    }
-
-    cargarDatos();
-  </script>
+    <script>
+        const url = "https://script.google.com/macros/s/AKfycbxmw7Efnvjm9B6roZ2sNdelhGP_XBUCnYiahwXSS8S2Zhjmvxd77POi5Cw0WU87qhTTcg/exec";
+        fetch(url)
+            .then(res => res.json())
+            .then(data => {
+                const contenedor = document.getElementById("productos-container");
+                contenedor.innerHTML = "";
+                data.forEach(producto => {
+                    const div = document.createElement("div");
+                    div.className = "producto";
+                    div.innerHTML = `
+                        <img src="${producto.imagen}" alt="${producto.nombre}" />
+                        <h2>${producto.nombre}</h2>
+                        <p><strong>Tienda:</strong> ${producto.tienda}</p>
+                        <p><strong>Precio:</strong> ${producto.precio}</p>
+                        <a href="${producto.enlace}" target="_blank">Ver producto</a>
+                    `;
+                    contenedor.appendChild(div);
+                });
+            })
+            .catch(err => {
+                document.getElementById("productos-container").innerHTML = "<p>Error al cargar productos.</p>";
+                console.error("Error:", err);
+            });
+    </script>
 </body>
 </html>
